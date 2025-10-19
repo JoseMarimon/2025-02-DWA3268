@@ -2,6 +2,7 @@ package com.parcial.dos.parcialdos.account.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,31 +23,53 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<AccountResponseDTO> create(@RequestBody AccountRequestDTO request) {
-        return null;
+        AccountResponseDTO response = service.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<AccountResponseDTO>> getAll() {
-        return null
+        List<AccountResponseDTO> accounts = service.getAll();
+        return ResponseEntity.ok(accounts);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponseDTO> getById(@PathVariable Long id) {
-        return null;
+        try {
+            AccountResponseDTO response = service.getById(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody AccountRequestDTO request) {
-        return null;
+        try {
+            String message = service.update(id, request);
+            return ResponseEntity.ok(message);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cuenta no encontrada");
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        return null;
+        try {
+            service.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    @GetMapping("/{numeroCuenta}")
+    @GetMapping("/by-number/{numeroCuenta}")
     public ResponseEntity<AccountOwnerBalanceDTO> getByNumeroCuenta(@PathVariable String numeroCuenta) {
-        return null;
+        try {
+            AccountOwnerBalanceDTO response = service.findByNumeroCuenta(numeroCuenta);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
